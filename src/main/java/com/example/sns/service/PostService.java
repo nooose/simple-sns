@@ -4,6 +4,7 @@ import com.example.sns.exception.ErrorCode;
 import com.example.sns.exception.SnsApplicationException;
 import com.example.sns.model.Entity.PostEntity;
 import com.example.sns.model.Entity.UserEntity;
+import com.example.sns.model.Post;
 import com.example.sns.repository.PostEntityRepository;
 import com.example.sns.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +27,22 @@ public class PostService {
     }
 
     @Transactional
-    public void modify(String title, String body, String userName, Integer postId) {
+    public Post modify(String title, String body, String userName, Integer postId) {
         UserEntity userEntity = userEntityRepository.findByUserName(userName).orElseThrow(() ->
                 new SnsApplicationException(ErrorCode.USER_NOT_FOUND, String.format("%s not founded", userName)));
 
         // post exist
+        PostEntity postEntity = postEntityRepository.findById(postId).orElseThrow(() ->
+                new SnsApplicationException(ErrorCode.POST_NOT_FOUND, String.format("%s not founded", postId)));
 
         // post permission
+        if (postEntity.getUser() != userEntity) {
+            throw new SnsApplicationException(ErrorCode.INVALID_PERMISSION, String.format("%s has no permission with %s", userName, postId));
+        }
+
+        postEntity.setTitle(title);
+        postEntity.setBody(body);
+
+        return Post.fromEntity(postEntityRepository.saveAndFlush(postEntity));
     }
 }

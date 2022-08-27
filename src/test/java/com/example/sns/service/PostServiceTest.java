@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -71,6 +72,7 @@ public class PostServiceTest {
 
         when(userEntityRepository.findByUserName(userName)).thenReturn(Optional.of(userEntity));
         when(postEntityRepository.findById(postId)).thenReturn(Optional.of(postEntity));
+        when(postEntityRepository.saveAndFlush(postEntity)).thenReturn(postEntity);
 
         Assertions.assertDoesNotThrow(() -> postService.modify(title, body, userName, 1));
     }
@@ -163,7 +165,9 @@ public class PostServiceTest {
     @Test
     void 내피드목록요청이_성공한경우() {
         Pageable pageable = mock(Pageable.class);
-        when(postEntityRepository.findAllByUser(any(), pageable)).thenReturn(Page.empty());
+        UserEntity user = mock(UserEntity.class);
+        when(userEntityRepository.findByUserName(any())).thenReturn(Optional.of(user));
+        when(postEntityRepository.findAllByUser(any(), eq(pageable))).thenReturn(Page.empty());
         Assertions.assertDoesNotThrow(() -> postService.my("", pageable));
     }
 

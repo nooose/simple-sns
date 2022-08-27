@@ -117,7 +117,7 @@ public class PostControllerTest {
         String title = "title";
         String body = "body";
 
-        doThrow(new SnsApplicationException(ErrorCode.INVALID_PERMISSION)).when(postService).modify(eq(title), eq(body), any(), eq(1));
+        doThrow(new SnsApplicationException(ErrorCode.POST_NOT_FOUND)).when(postService).modify(eq(title), eq(body), any(), eq(1));
 
         mockMvc.perform(put("/api/v1/posts/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -165,7 +165,7 @@ public class PostControllerTest {
         mockMvc.perform(delete("/api/v1/posts/1")
                         .contentType(MediaType.APPLICATION_JSON)
                 ).andDo(print())
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -210,7 +210,7 @@ public class PostControllerTest {
         mockMvc.perform(get("/api/v1/posts/my")
                         .contentType(MediaType.APPLICATION_JSON)
                 ).andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isUnauthorized());
     }
 
 }

@@ -2,10 +2,13 @@ package com.example.sns.service;
 
 import com.example.sns.exception.ErrorCode;
 import com.example.sns.exception.SnsApplicationException;
+import com.example.sns.model.Comment;
+import com.example.sns.model.Entity.CommentEntity;
 import com.example.sns.model.Entity.LikeEntity;
 import com.example.sns.model.Entity.PostEntity;
 import com.example.sns.model.Entity.UserEntity;
 import com.example.sns.model.Post;
+import com.example.sns.repository.CommentEntityRepository;
 import com.example.sns.repository.LikeEntityRepository;
 import com.example.sns.repository.PostEntityRepository;
 import com.example.sns.repository.UserEntityRepository;
@@ -22,6 +25,7 @@ public class PostService {
     private final PostEntityRepository postEntityRepository;
     private final UserEntityRepository userEntityRepository;
     private final LikeEntityRepository likeEntityRepository;
+    private final CommentEntityRepository commentEntityRepository;
 
     @Transactional
     public void create(String title, String boyd, String userName) {
@@ -88,6 +92,13 @@ public class PostService {
     public void comment(Integer postId, String userName, String comment) {
         PostEntity postEntity = getPostEntityOrException(postId);
         UserEntity userEntity = getUserEntityOrException(userName);
+
+        commentEntityRepository.save(CommentEntity.of(userEntity, postEntity, comment));
+    }
+
+    public Page<Comment> getComments(Integer postId, Pageable pageable) {
+        PostEntity postEntity = getPostEntityOrException(postId);
+        return commentEntityRepository.findAllByPost(postEntity, pageable).map(Comment::fromEntity);
     }
 
     private PostEntity getPostEntityOrException(Integer postId) {

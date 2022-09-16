@@ -2,16 +2,12 @@ package com.example.sns.service;
 
 import com.example.sns.exception.ErrorCode;
 import com.example.sns.exception.SnsApplicationException;
+import com.example.sns.model.AlarmArgs;
+import com.example.sns.model.AlarmType;
 import com.example.sns.model.Comment;
-import com.example.sns.model.Entity.CommentEntity;
-import com.example.sns.model.Entity.LikeEntity;
-import com.example.sns.model.Entity.PostEntity;
-import com.example.sns.model.Entity.UserEntity;
+import com.example.sns.model.Entity.*;
 import com.example.sns.model.Post;
-import com.example.sns.repository.CommentEntityRepository;
-import com.example.sns.repository.LikeEntityRepository;
-import com.example.sns.repository.PostEntityRepository;
-import com.example.sns.repository.UserEntityRepository;
+import com.example.sns.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +22,7 @@ public class PostService {
     private final UserEntityRepository userEntityRepository;
     private final LikeEntityRepository likeEntityRepository;
     private final CommentEntityRepository commentEntityRepository;
+    private final AlarmEntityRepository alarmEntityRepository;
 
     @Transactional
     public void create(String title, String boyd, String userName) {
@@ -80,6 +77,7 @@ public class PostService {
         });
 
         likeEntityRepository.save(LikeEntity.of(userEntity, postEntity));
+        alarmEntityRepository.save(AlarmEntity.of(postEntity.getUser(), AlarmType.NEW_LIKE_ON_POST, new AlarmArgs(userEntity.getId(), postEntity.getId())));
     }
 
     public int likeCount(Integer postId) {
@@ -94,6 +92,7 @@ public class PostService {
         UserEntity userEntity = getUserEntityOrException(userName);
 
         commentEntityRepository.save(CommentEntity.of(userEntity, postEntity, comment));
+        alarmEntityRepository.save(AlarmEntity.of(postEntity.getUser(), AlarmType.NEW_COMMENT_ON_POST, new AlarmArgs(userEntity.getId(), postEntity.getId())));
     }
 
     public Page<Comment> getComments(Integer postId, Pageable pageable) {

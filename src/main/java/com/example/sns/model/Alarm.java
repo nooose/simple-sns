@@ -2,15 +2,16 @@ package com.example.sns.model;
 
 import com.example.sns.model.Entity.AlarmEntity;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Timestamp;
 
-@Data
+@Slf4j
+@Getter
 @AllArgsConstructor
 public class Alarm {
     private Integer id;
-    private User user;
     private AlarmType alarmType;
     private AlarmArgs args;
     private Timestamp registeredAt;
@@ -20,7 +21,6 @@ public class Alarm {
     public static Alarm fromEntity(AlarmEntity entity) {
         return new Alarm(
                 entity.getId(),
-                User.fromEntity(entity.getUser()),
                 entity.getAlarmType(),
                 entity.getArgs(),
                 entity.getRegisteredAt(),

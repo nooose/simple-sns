@@ -15,7 +15,11 @@ spring:
     password: 7e11a1e9454c894900b78a949fd9d8906b8279339d8b111c4073940c30180d3f
     driver-class-name: org.postgresql.Driver
 
+  redis:
+    url: redis://:p038177eaf40ae383c300803a17b9ec14ba1a9462b4a0a65d265c062ef3a5650c@ec2-34-231-96-184.compute-1.amazonaws.com:25629
+
 jwt:
   secret-key: noose.simple-sns-application-2022.secret-key
   token:
     expired-time-ms: 2592000000 # 30 days
+

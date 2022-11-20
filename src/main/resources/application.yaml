@@ -18,6 +18,31 @@ spring:
   redis:
     url: redis://:p038177eaf40ae383c300803a17b9ec14ba1a9462b4a0a65d265c062ef3a5650c@ec2-34-231-96-184.compute-1.amazonaws.com:25629
 
+  kafka:
+    properties:
+      security.protocol: SASL_SSL
+      sasl.mechanism: SCRAM-SHA-256
+      sasl.jass.config: spring.kafka.properties.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username="l05cin43" password="ZyDxsfHTOXNR67ljd1jI0R6rxMStLfP5";
+
+    consumer:
+      bootstrap-servers: dory-01.srvs.cloudkafka.com:9094, dory-02.srvs.cloudkafka.com:9094, dory-03.srvs.cloudkafka.com:9094
+      group-id: alarm
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.IntegerDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+    listener:
+      ack-mode: MANUAL
+    producer:
+      bootstrap-servers: dory-01.srvs.cloudkafka.com:9094, dory-02.srvs.cloudkafka.com:9094, dory-03.srvs.cloudkafka.com:9094
+      key-serializer: org.apache.kafka.common.serialization.IntegerSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        enable.idempotence: false
+    topic:
+      alarm: l05cin43-alarm
+
 jwt:
   secret-key: noose.simple-sns-application-2022.secret-key
   token:
